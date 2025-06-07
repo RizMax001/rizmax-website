@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Kontak Rizky - Payment</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@600&display=swap');
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body, html {
+      margin: 0; padding: 0;
+      height: 100%;
+      font-family: 'Poppins', sans-serif;
+      background-color: #6a0dad;
+      color: white;
+    }
+
+    .centered {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      text-align: center;
+      flex-direction: column;
+      padding: 20px;
+    }
+
+    #intro {
+      background: #4b0082cc;
+      border-radius: 20px;
+      padding: 30px 40px;
+      box-shadow: 0 0 25px 4px #9b30ffcc;
+      max-width: 480px;
+      transition: opacity 0.3s ease;
+    }
+
+    #intro h1 {
+      font-size: 2.8rem;
+      margin-bottom: 15px;
+      text-shadow: 0 0 10px #d07fff;
+    }
+
+    #intro p {
+      font-size: 1.25rem;
+      margin-bottom: 25px;
+      font-weight: 600;
+      min-height: 2em;
+      transition: opacity 0.7s ease;
+    }
+
+    #intro button {
+      background: linear-gradient(45deg, #b86bff, #7f00ff);
+      border: none;
+      padding: 15px 40px;
+      border-radius: 30px;
+      color: white;
+      font-weight: 700;
+      font-size: 1.1rem;
+      cursor: pointer;
+      box-shadow: 0 6px 15px #9b30ffcc;
+      transition: background 0.3s ease, transform 0.2s ease;
+      margin-top: 10px;
+      margin-right: 10px;
+    }
+
+    #intro button:hover {
+      background: linear-gradient(45deg, #7f00ff, #b86bff);
+      transform: scale(1.05);
+    }
+
+    /* tambahan css khusus kontak */
+    #kontak {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: #1a001acc;
+      box-shadow: 0 0 20px 3px rgba(0, 0, 0, 0.9);
+      width: 320px;
+      padding: 25px 30px;
+      border-radius: 16px;
+      text-align: center;
+      user-select: none;
+      color: white;
+      z-index: 9999;
+      flex-direction: column;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    #kontak.show {
+      display: flex;
+      opacity: 1;
+    }
+
+    .avatar {
+      width: 90px;
+      height: 90px;
+      border-radius: 50%;
+      border: 3px solid #c71585;
+      box-shadow: 0 0 15px #c71585cc;
+      margin: 0 auto 18px auto;
+      object-fit: cover;
+    }
+
+    #kontak h2 {
+      font-size: 26px;
+      font-weight: 700;
+      margin-bottom: 12px;
+      text-shadow: 0 0 10px #da70d6;
+    }
+
+    #kontak .info {
+      font-size: 15px;
+      margin: 10px 0;
+      font-weight: 600;
+      color: #e0d4f7;
+      text-shadow: 0 0 4px rgba(130, 0, 170, 0.7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .status {
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: #fff;
+      background: linear-gradient(135deg, #b86bff, #7f00ff);
+      box-shadow: 0 0 10px #a052ffcc;
+      animation: pulseGlow 2.5s ease-in-out infinite alternate;
+    }
+
+    .phone-icon {
+      width: 18px;
+      height: 18px;
+      fill: #fff;
+    }
+
+    .menu-utama {
+      margin-top: 20px;
+      background: #1a1a1acc;
+      border-radius: 12px;
+      padding: 10px 15px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .menu-utama button {
+      background: #8a2be2;
+      border: none;
+      padding: 10px;
+      border-radius: 10px;
+      color: white;
+      font-weight: 700;
+      font-size: 14px;
+      cursor: pointer;
+      transition: background 0.3s ease, transform 0.2s ease;
+      box-shadow: 0 5px 12px rgba(138, 43, 226, 0.8);
+    }
+
+    .menu-utama button:hover {
+      background: #c71585;
+      transform: scale(1.05);
+      box-shadow: 0 6px 15px rgba(199, 21, 133, 0.9);
+    }
+
+    /* Tombol tutup kontak */
+    #closeKontak {
+      position: absolute;
+      top: 10px;
+      right: 14px;
+      font-size: 26px;
+      font-weight: 900;
+      cursor: pointer;
+      color: #ff77ff;
+      user-select: none;
+      transition: color 0.3s ease;
+      background: transparent;
+      border: none;
+    }
+
+    #closeKontak:hover {
+      color: #ff33ff;
+    }
+
+    /* Modal payment style */
+    #modalPayment {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: #4b0082cc;
+      backdrop-filter: blur(4px);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      padding: 20px;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    #modalPayment.show {
+      display: flex;
+      opacity: 1;
+    }
+
+    #modalPayment .modal-content {
+      background: #6a0dad;
+      border-radius: 20px;
+      padding: 30px 40px;
+      max-width: 400px;
+      width: 100%;
+      box-shadow: 0 0 30px 5px #9b30ffcc;
+      color: white;
+      text-align: center;
+      position: relative;
+      font-weight: 600;
+      font-size: 1.2rem;
+    }
+
+    #modalPayment .close-btn {
+      position: absolute;
+      top: 12px;
+      right: 16px;
+      font-size: 28px;
+      font-weight: 900;
+      cursor: pointer;
+      color: #ff77ff;
+      user-select: none;
+      transition: color 0.3s ease;
+    }
+
+    #modalPayment .close-btn:hover {
+      color: #ff33ff;
+    }
+
+    #modalPayment h3 {
+      margin-bottom: 20px;
+      font-size: 1.6rem;
+      text-shadow: 0 0 10px #d07fff;
+    }
+
+    .payment-button {
+      width: 100%;
+      background: linear-gradient(45deg, #b86bff, #7f00ff);
+      border: none;
+      border-radius: 12px;
+      padding: 12px 20px;
+      margin: 8px 0;
+      font-weight: 700;
+      font-size: 1rem;
+      color: white;
+      cursor: pointer;
+      box-shadow: 0 0 12px #a052ffcc;
+      transition: background 0.3s ease;
+      text-align: left;
+      user-select: none;
+    }
+    .payment-button:hover {
+      background: linear-gradient(45deg, #7f00ff, #b86bff);
+    }
+
+    .payment-info {
+      margin-top: 10px;
+      border-radius: 12px;
+      background: #7f00ffcc;
+      padding: 15px;
+      box-shadow: 0 0 15px #c77fffcc;
+      user-select: text;
+      text-align: center;
+      display: none;
+    }
+
+    .payment-info img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 12px;
+      box-shadow: 0 0 15px #d07fffcc;
+    }
+
+    @keyframes pulseGlow {
+      0% {
+        box-shadow: 0 0 10px #a052ffcc;
+      }
+      100% {
+        box-shadow: 0 0 20px 6px #c71585cc;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div id="intro" class="centered">
+    <h1>Halo! 👋</h1>
+    <p id="kataPenyemangat">Tunggu Sebentar.....🥰</p>
+    <button id="btnLihatKontak">Lihat Kontak</button>
+    <button id="btnPayment">Payment</button>
+  </div>
+<div id="kontak">
+  <button id="closeKontak" title="Tutup Kontak">&times;</button>
+  <img src="https://i.pravatar.cc/150?img=12" alt="Foto Rizky" class="avatar" />
+  <h2>Rizky</h2>
+
+  <div class="info">
+    <span>Status:</span>
+    <div class="status" title="Online">
+      <svg xmlns="http://www.w3.org/2000/svg" class="icon" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="phone-icon">
+        <circle cx="12" cy="12" r="10" />
+        <line x1="12" y1="8" x2="12" y2="12" />
+        <line x1="12" y1="16" x2="12.01" y2="16" />
+      </svg>
+      Online
+    </div>
+  </div>
+
+  <div class="menu-utama" id="menuUtama">
+    <button id="btnChatWhatsApp">Chat WhatsApp</button>
+    <button id="btnKembaliIntro">Chat Telegram</button>
+  </div>
+</div>
+
+  <div id="modalPayment">
+  <div class="modal-content">
+    <button class="close-btn" id="closePayment">&times;</button>
+    <h3>Pilih Metode Pembayaran</h3>
+    <button class="payment-button" data-pay="dana">Dana</button>
+    <button class="payment-button" data-pay="ovo">OVO</button>
+    <button class="payment-button" data-pay="gopay">Gopay</button>
+    <button class="payment-button" data-pay="qris">QRIS</button>
+    <div class="payment-info" id="paymentInfo"></div>
+  </div>
+</div>
+
+<script>
+  const intro = document.getElementById('intro');
+  const kontak = document.getElementById('kontak');
+  const btnLihatKontak = document.getElementById('btnLihatKontak');
+  const btnPayment = document.getElementById('btnPayment');
+  const closeKontak = document.getElementById('closeKontak');
+  const btnChatWhatsApp = document.getElementById('btnChatWhatsApp');
+  const btnKembaliIntro = document.getElementById('btnKembaliIntro');
+  const modalPayment = document.getElementById('modalPayment');
+  const closePayment = document.getElementById('closePayment');
+  const paymentButtons = document.querySelectorAll('.payment-button');
+  const paymentInfo = document.getElementById('paymentInfo');
+  const kataPenyemangat = document.getElementById('kataPenyemangat');
+
+  // Tampilkan kontak
+  btnLihatKontak.addEventListener('click', () => {
+    intro.style.opacity = '0';
+    setTimeout(() => {
+      intro.style.display = 'none';
+      kontak.classList.add('show');
+    }, 300);
+  });
+
+  // Tutup kontak
+  closeKontak.addEventListener('click', () => {
+    kontak.classList.remove('show');
+    setTimeout(() => {
+      intro.style.display = 'flex';
+      intro.style.opacity = '1';
+    }, 300);
+  });
+
+  // Tombol kembali ke intro dari kontak
+  btnKembaliIntro.addEventListener('click', () => {
+    window.open('https://t.me/halobig55', '_blank');
+  });
+
+  // Chat WhatsApp (ganti nomor sesuai kebutuhan)
+  btnChatWhatsApp.addEventListener('click', () => {
+    window.open('https://wa.me/6288221385713', '_blank');
+  });
+
+  // Tampilkan modal payment
+  btnPayment.addEventListener('click', () => {
+    modalPayment.classList.add('show');
+    paymentInfo.style.display = 'none';
+    paymentInfo.innerHTML = '';
+  });
+
+  // Tutup modal payment
+  closePayment.addEventListener('click', () => {
+    modalPayment.classList.remove('show');
+  });
+
+  // Fungsi sembunyikan semua info payment
+  function hideAllPaymentInfo() {
+    paymentInfo.style.display = 'none';
+    paymentInfo.innerHTML = '';
+  }
+
+  // Tampilkan info sesuai metode pembayaran
+
+
+  // ... kode lain tetap sama ...
+
+  // Tampilkan info sesuai metode pembayaran
+  paymentButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const pay = btn.getAttribute('data-pay');
+      let html = '';
+      switch (pay) {
+        case 'dana':
+          html = `
+            <p>Scan QR Code DANA di bawah ini:</p>
+            <img src="https://cloudkuimages.guru/uploads/images/6843f48c49050.jpg" alt="QR DANA" />
+            <p>Nomor: 088238911751</p>
+          `;
+          break;
+        case 'ovo':
+          html = `
+            <p>Scan QR Code OVO di bawah ini:</p>
+            <img src="https://cloudkuimages.guru/uploads/images/6843f49f5d3c6.jpg" alt="QR OVO" />
+            <p>Nomor: -</p>
+          `;
+          break;
+        case 'gopay':
+          html = `
+            <p>Scan QR Code GOPAY di bawah ini:</p>
+            <img src="https://cloudkuimages.guru/uploads/images/6843f49863f35.jpg" alt="QR GOPAY" />
+            <p>Nomor: -</p>
+          `;
+          break;
+        case 'qris':
+          html = `
+            <p>Scan QR Code QRIS di bawah ini:</p>
+            <img src="https://cloudkuimages.guru/uploads/images/6843f4a6372b5.jpg" alt="QR QRIS" />
+            <p>Scan QRIS untuk pembayaran mudah.</p>
+          `;
+          break;
+        default:
+          html = `<p>Metode pembayaran tidak diketahui.</p>`;
+      }
+      paymentInfo.innerHTML = html;
+      paymentInfo.style.display = 'block';
+    });
+  });
+
+  // Kata penyemangat berganti otomatis tiap 3 detik
+  const phrases = [
+    "Tunggu Sebentar.....🥰",
+    "Semangat Terus! 💜",
+    "Kamu Bisa! 🔥",
+    "Jangan Pernah Menyerah! 💪",
+    "Terima Kasih Sudah Berkunjung! 🤗"
+  ];
+  let phraseIndex = 0;
+
+  setInterval(() => {
+    phraseIndex = (phraseIndex + 1) % phrases.length;
+    kataPenyemangat.style.opacity = 0;
+    setTimeout(() => {
+      kataPenyemangat.textContent = phrases[phraseIndex];
+      kataPenyemangat.style.opacity = 1;
+    }, 400);
+  }, 3000);
+</script>
+
+</body>
+</html>
